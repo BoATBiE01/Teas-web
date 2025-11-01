@@ -100,15 +100,39 @@ hr { border: 1px solid #fff; width: 50%; margin: 20px auto; }
 .search-form button:hover {
   color: #ccc;
 }
+/* 🔸 Hamburger Button */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+.hamburger span {
+  width: 25px; height: 3px;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
 
-/* 🔹 สำหรับมือถือ: ย่อขนาด */
+/* ✅ Mobile Menu Style */
+@media (max-width: 768px) {
+  .hamburger { display: flex; }
+}
+
+/* 🔹 Hamburger Animation (เปิดเมนู) */
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translateY(8px);
+}
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translateY(-8px);
+}
+
+/* ปรับขนาดโลโก้ */
 @media (max-width: 600px) {
-  .search-form input {
-    width: 70px;
-  }
-  .search-form input:focus {
-    width: 100px;
-  }
+  .logo { font-size: 22px; }
 }
 
 /* Hero Section */
@@ -337,7 +361,7 @@ main { background:black; padding:100px 20px 50px 20px; }
 
 <header class="navbar">
   <div class="nav-container">
-    <div class="logo"><a href="webno1.html" style="text-decoration:none; color:#fff;">TUBLING</a></div>
+    <div class="logo"><a href="index.html" style="text-decoration:none; color:#fff;">TUBLING</a></div>
     <nav class="nav-links">
   <!-- ✅ Search Bar -->
   <form class="search-form" action="#" method="get">
