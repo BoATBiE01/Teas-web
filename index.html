@@ -198,7 +198,7 @@ main {
     }
 
     .slide {
-      min-width: 960px;
+      flex: 0 0 100%;           /* ✅ แก้ให้แต่ละ slide กว้างเท่ากับ container เสมอ */
       height: 540px;
       background: transparent;
       color: #000;
@@ -368,12 +368,11 @@ main {
 
   .slider-container {
     width: 100%;
-    height: auto;
     aspect-ratio: 16 / 9;
+    height: auto;
   }
 
   .slide {
-    min-width: 100%;
     height: auto;
     aspect-ratio: 16 / 9;
   }
@@ -495,44 +494,69 @@ main {
 
   fadeEls.forEach(el => observer.observe(el));
 
-  /*Slide*/
-    const slider = document.querySelector('.slider');
-    const slides = document.querySelectorAll('.slide');
-    const dots = document.querySelectorAll('.dots span');
-    const prev = document.querySelector('.arrow.left');
-    const next = document.querySelector('.arrow.right');
-    let index = 0;
+  // 🎞️ Slide (responsive + swipe)
+  const slider = document.querySelector('.slider');
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.dots span');
+  const prev = document.querySelector('.arrow.left');
+  const next = document.querySelector('.arrow.right');
+  let index = 0;
 
-    function updateSlider() {
-      slider.style.transform = `translateX(-${index * 960}px)`;
-      dots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === index);
-      });
-    }
+  function updateSlider() {
+    const slideWidth = slides[0].clientWidth; // ✅ ใช้ความกว้างจริงของ slide
+    slider.style.transform = `translateX(-${index * slideWidth}px)`;
+    dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+  }
 
-    function nextSlide() {
-      index = (index + 1) % slides.length;
+  function nextSlide() {
+    index = (index + 1) % slides.length;
+    updateSlider();
+  }
+
+  function prevSlide() {
+    index = (index - 1 + slides.length) % slides.length;
+    updateSlider();
+  }
+
+  next.addEventListener('click', nextSlide);
+  prev.addEventListener('click', prevSlide);
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      index = i;
       updateSlider();
-    }
-
-    function prevSlide() {
-      index = (index - 1 + slides.length) % slides.length;
-      updateSlider();
-    }
-
-    next.addEventListener('click', nextSlide);
-    prev.addEventListener('click', prevSlide);
-
-    // Dot click event
-    dots.forEach((dot, i) => {
-      dot.addEventListener('click', () => {
-        index = i;
-        updateSlider();
-      });
     });
+  });
 
-    // Auto play every 4s
-    setInterval(nextSlide, 4000);
+  // Auto play
+  let autoPlay = setInterval(nextSlide, 4000);
+
+  // Responsive resize
+  window.addEventListener('resize', updateSlider);
+  updateSlider();
+
+  // 📱 Swipe (มือถือ)
+  let startX = 0;
+  let endX = 0;
+  const threshold = 50;
+
+  slider.addEventListener('touchstart', e => {
+    clearInterval(autoPlay);
+    startX = e.touches[0].clientX;
+  });
+
+  slider.addEventListener('touchmove', e => {
+    endX = e.touches[0].clientX;
+  });
+
+  slider.addEventListener('touchend', () => {
+    const diff = startX - endX;
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0) nextSlide();
+      else prevSlide();
+    }
+    autoPlay = setInterval(nextSlide, 4000);
+  });
 </script>
 
 </body>
